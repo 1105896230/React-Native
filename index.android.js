@@ -5,29 +5,44 @@
  */
 
 import React, { Component } from 'react';
-import { AppRegistry,StyleSheet, Text ,Image,View} from 'react-native';
 
-class AwesomeProject extends Component {
-    render() {
+
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View,
+  Image
+} from 'react-native';
+
+export default class AwesomeProject extends Component {
+  render() {
+    let pic = {
+      uri: 'https://ss0.baidu.com/73t1bjeh1BF3odCf/it/u=3451371770,2899345145&fm=85&s=BB887023199DC0CE10DCC9DA0300C0B1'
+    };
     return (
-      <View>
-        <Text style={styles.red}>just red</Text>
-        <Text style={styles.bigblue}>just bigblue</Text>
-        <Text style={[styles.bigblue, styles.red]}>bigblue, then red</Text>
-        <Text style={[styles.red, styles.bigblue]}>red, then bigblue</Text>
-      </View>
+      <Image source={pic} style={{width: 193, height: 110}} />
     );
   }
 }
+
 const styles = StyleSheet.create({
-  bigblue: {
-    color: 'blue',
-    fontWeight: 'bold',
-    fontSize: 30,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
-  red: {
-    color: 'red',
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
   },
 });
-// 注意，这里用引号括起来的'HelloWorldApp'必须和你init创建的项目名一致
+
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
