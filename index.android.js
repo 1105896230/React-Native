@@ -14,7 +14,8 @@ import {
     ScrollView,
     Image,
     ListView,
-    Navigator
+    Navigator,
+    TouchableHighlight,
 } from 'react-native';
 import MyScene from './MyScene';
 export default class AwesomeProject extends Component {
@@ -22,17 +23,32 @@ export default class AwesomeProject extends Component {
         title: 'MyScene'
     };
 
-    render() {
-        return (
-            <View>
-                <Text style={{width: 50, height: 50, backgroundColor: 'powderblue'}} >
-                    Hi! My name is {this.props.title}.
-                </Text>
-                <View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} />
-                <View style={{width: 150, height: 150, backgroundColor: 'steelblue'}} />
-            </View>
+    render(){
+        return(
+            <TouchableHighlight>
+                onPressIn={this.onPressIn}
+                onPressOut={this.onPressOut}
+                style={styles.touchable}
+                <View styel={styles.button}>
+                    <Text style={styles.welcome}>
+                        {this.state.pressing?'EEK':'PUSH ME'}
+                    </Text>
+                </View>
+            </TouchableHighlight>
         );
     }
+
+    // render() {
+    //     return (
+    //         <View>
+    //             <Text style={{width: 50, height: 50, backgroundColor: 'powderblue'}} >
+    //                 Hi! My name is {this.props.title}.
+    //             </Text>
+    //             <View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} />
+    //             <View style={{width: 150, height: 150, backgroundColor: 'steelblue'}} />
+    //         </View>
+    //     );
+    // }
     // render() {
     //     return (
     //         <Navigator
@@ -44,6 +60,28 @@ export default class AwesomeProject extends Component {
     //     );
     // }
 }
+var styles1=StyleSheet.create({
+     bold:{
+         fontWeight:"bold",
+     },
+    italic:{
+        fontStyle:"italic"
+    }
+});
+// var Strong=StyleSheet.create({
+//    render:function () {
+//        return(
+//            <Text style={styles1.bold}>{this.props.children}</Text>
+//        );
+//    }
+// });
+// var En=StyleSheet.create({
+//    render:function () {
+//        return(
+//            <Text style={styles1.italic}>{this.props.children}</Text>
+//        );
+//    }
+// });
 class FixedDimensionsBasics extends Component {
     render() {
         return (
@@ -237,4 +275,6 @@ class SimpleNavigationApp extends Component {
     }
 }
 
-AppRegistry.registerComponent('AwesomeProject', () => SimpleNavigationApp);
+
+
+AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
