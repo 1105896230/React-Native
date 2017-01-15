@@ -16,8 +16,12 @@ import {
     ListView,
     Navigator,
     TouchableHighlight,
+    Animated,
 } from 'react-native';
 import MyScene from './MyScene';
+
+import PressDemo from './PressDemo';
+import PanDemo from './PanDemo';
 export default class AwesomeProject extends Component {
     static defaultProps = {
         title: 'MyScene'
@@ -59,6 +63,65 @@ export default class AwesomeProject extends Component {
     //         />
     //     );
     // }
+}
+
+class ImageDemo extends Component{
+    render(){
+        return(
+            <Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+                   style={{width: 400, height: 400}} />
+        );
+    }
+}
+class MyButton extends Component {
+    _onPressButton() {
+        console.log("You tapped the button!");
+    }
+    test(){
+        console.log("test!");
+    }
+
+    render() {
+        return (
+            <TouchableHighlight onPress={this.test}>
+                <Text>Button</Text>
+            </TouchableHighlight>
+        );
+    }
+}
+
+class Playground extends React.Component {
+    //noinspection JSAnnotator
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            bounceValue: new Animated.Value(0),
+        };
+    }
+    //noinspection JSAnnotator
+    render(): ReactElement {
+        return (
+            <Animated.Image                         // 可选的基本组件类型: Image, Text, View
+                source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}
+                style={{
+                    flex: 1,
+                    transform: [                        // `transform`是一个有序数组（动画按顺序执行）
+                        {scale: this.state.bounceValue},  // 将`bounceValue`赋值给 `scale`
+                    ]
+                }}
+            />
+        );
+    }
+    componentDidMount() {
+        this.state.bounceValue.setValue(1.5);     // 设置一个较大的初始值
+        Animated.spring(                          // 可选的基本动画类型: spring, decay, timing
+            this.state.bounceValue,                 // 将`bounceValue`值动画化
+            {
+                toValue: 0.8,                         // 将其值以动画的形式改到一个较小值
+                friction: 1,                          // Bouncier spring
+            }
+        ).start();                                // 开始执行动画
+    }
 }
 var styles1=StyleSheet.create({
      bold:{
@@ -277,4 +340,4 @@ class SimpleNavigationApp extends Component {
 
 
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('AwesomeProject', () => PanDemo);
