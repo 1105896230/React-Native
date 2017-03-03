@@ -13,19 +13,20 @@ import {
     Text,
     View,
     ListView,
+    TextInput,
 }from 'react-native';
 var MOCKED_MOVIES_DATA = [
     {title: '标题', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
 ];
-var REQUEST_URL ='https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
+var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 class NetMovieList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dataSource:new ListView.DataSource({
-                rowHasChanged:(row1,row2)=>row1!==row2,
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (row1, row2) => row1 !== row2,
             }),
-            loader:false,
+            loader: false,
         };
 
         this.fetchData = this.fetchData.bind(this);
@@ -37,7 +38,7 @@ class NetMovieList extends Component {
         }
         // var movie = this.state.movies[0];
         // return this.renderMovie(movie);
-       return this.renderMovieList();
+        return this.renderMovieList();
     };
 
     componentDidMount() {
@@ -49,8 +50,8 @@ class NetMovieList extends Component {
             .then((response) => response.json())
             .then((responseData) => {
                 this.setState({
-                    dataSource:this.state.dataSource.cloneWithRows(responseData.movies),
-                    loader:true,
+                    dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
+                    loader: true,
                 });
             });
     }
@@ -76,11 +77,11 @@ class NetMovieList extends Component {
         );
     }
 
-    renderMovieList(){
-        return(
-        <ListView  dataSource={this.state.dataSource}
-                  renderRow={this.renderMovie}
-                  style={styles.listView}/>
+    renderMovieList() {
+        return (
+            <ListView dataSource={this.state.dataSource}
+                      renderRow={this.renderMovie}
+                      style={styles.listView}/>
         );
     }
 }
@@ -106,44 +107,134 @@ var styles = StyleSheet.create({
     year: {
         textAlign: 'center',
     },
-    listView:{
-        paddingTop:20,
-        backgroundColor:'#F5FCFF',
+    listView: {
+        paddingTop: 20,
+        backgroundColor: '#F5FCFF',
     },
 });
 
-class ImageDemo extends Component{
-    render(){
-        let pic={
-            uri:'http://p2.ifengimg.com/haina/2017_09/7c7aeba6cf16bad_w600_h337.jpg'
+class ImageDemo extends Component {
+    render() {
+        let pic = {
+            uri: 'http://p2.ifengimg.com/haina/2017_09/7c7aeba6cf16bad_w600_h337.jpg'
         };
-        return(
-         <Image source={pic} style={{width :193,height:110}}/>
-      );
+        return (
+            <Image source={pic} style={{width :193,height:110}}/>
+        );
     }
 }
 
 
-class Blink extends Component{
-    constructor(props){
+class Blink extends Component {
+    constructor(props) {
         super(props);
-        this.state={
-            showText:true,
-            text:'12212121'
+        this.state = {
+            showText: true,
+            text: '12212121'
         }
 
         //每1000毫秒对showText进行取反
-        setInterval(()=>{
-            this.setState({showText:!this.state.showText});
-        },1000)
+        setInterval(() => {
+            this.setState({showText: !this.state.showText});
+        }, 1000)
     }
-    render(){
-        let display=this.state.showText?'21212':'';
-        return(
+
+    render() {
+        let display = this.state.showText ? '21212' : '';
+        return (
             <Text style={{backgroundColor:'red',width:300,height: 300}}>{display}</Text>
         );
     }
 }
 
-AppRegistry.registerComponent("AwesomeProject", () => Blink);
+class FixDimensionBasics extends Component {
+    render() {
+        return (
+            <View>
+           <View style={{width:50,height:50,backgroundColor:'powderblue'}}/>
+                <View style={{width:100,height:100,backgroundColor:'skyblue'}}/>
+                <View style={{width:150,height:150,backgroundColor:'steelblue'}}/>
+            </View>
+        );
+    }
+}
+
+class FlexDimensionBasic extends Component{
+    render(){
+        return(
+            <View style={{flex:1}}>
+                <View style={{flex:1,backgroundColor:'powderblue'}}/>
+                <View style={{flex:2,backgroundColor:'skyblue'}}/>
+                <View style={{flex:3,backgroundColor:'steelblue'}}/>
+            </View>
+        );
+    }
+}
+
+class FlexDirectionBasics extends Component{
+    render(){
+        return(
+            //flexDirction 水平布局
+          <View style={{flex:1,flexDirection:'row'}}>
+              <View style={{width:50,height:50,backgroundColor:'powderblue'}}/>
+              <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+              <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+          </View>
+        );
+    }
+}
+
+class JustifyContentBasics extends Component{
+    render(){
+        return(
+                //justifyContent 和layout-grativy有点类似
+          <View style={{ flex:1,flexDirection:'column',justifyContent:'center',}}>
+              <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+              <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+              <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+          </View>
+        );
+    }
+}
+
+class AlignItemsBasics extends Component {
+    render() {
+        return (
+            // 尝试把`alignItems`改为`flex-start`看看
+            // 尝试把`justifyContent`改为`flex-end`看看
+            // 尝试把`flexDirection`改为`row`看看
+            <View style={{
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        //决定次轴的分布，如果主轴是数值，这个就是水平
+        alignItems: 'flex-end',
+      }}>
+                <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+                <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+                <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+            </View>
+        );
+    }
+};
+
+class PizzaTranslator extends Component{
+    constructor(props){
+        super(props);
+        this.state={text:''}
+    }
+    render(){
+        return(
+          <View style={{padding:10}}>
+          <TextInput style={{height:40}}
+                     placeholder="Type here to translate!"
+                     onChangeText={(text)=>this.setState({text})}/>
+              <Text style={{padding:10,fontSize:42}}>
+                  {this.state.text.split(' ').map((word)=>word&&'@').join(' ')}
+            </Text>
+          </View>
+        );
+    }
+}
+AppRegistry.registerComponent("AwesomeProject", () => PizzaTranslator);
 
