@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-export default class movielists extends Component {
+export default class homeList extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('movielists', () => movielists);
+AppRegistry.registerComponent('homeList', () => homeList);

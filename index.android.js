@@ -5,104 +5,50 @@
  */
 
 import React, {Component} from 'react';
-var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 import {
     AppRegistry,
     StyleSheet,
     Text,
-    Image,
-    ListView,
-    View
+    View, Navigator,
 } from 'react-native';
-var MOCKED_MOVIES_DATA = [
-    {title: '标题', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
-];
-export default class movielists extends Component {
-    constructor(props){
-        super(props);
-        this.state={
-            dataSoucre:new ListView.DataSource({
-                rowHasChanged:(row1,row2)=>row1!==row2,
-            }),
-            loaded:false,
-        };
-        this.fetchData=this.fetchData.bind(this);
-    }
-    componentDidMount(){
-        this.fetchData();
-    }
-    fetchData(){
-        fetch(REQUEST_URL)
-            .then((response)=>response.json())
-            .then((responseData)=>{
-            this.setState({
-                dataSource:this.state.dataSoucre.cloneWithRows(responseData.movies),
-                loaded:true,
-            });
-            });
-    }
+
+import SearchPage from './SearchPage';
+import SearchResult from './SearchResult'
+export default class homeList extends Component {
     render() {
-          if (!this.state.loaded){
-              return this.renderLoadingView();
-          }
-          return  <ListView
-              dataSource={this.state.dataSource}
-              renderRow={this.rederMovie}
-              style={styles.listView}
-          />;
-    }
-    renderLoadingView(){
-        return(
-            <View style={styles.container}>
-                <Text>
-                    正在加载电影数据...
-                </Text>
+        return (
+            <View style={styles.container}
+            >
+                <Navigator
+                    initialRoute={{title:'Property Finder',component:SearchPage,}}
+                    renderScene={(route,navigator)=>{
+                        let MyComponent = route.component;
+                        if(MyComponent){
+                            return (<MyComponent {...route.params} title={route.title} navigator={navigator}/>);
+                        }
+                    }
+                    }
+                />
             </View>
         );
     }
-    rederMovie(movie){
-        return(
-            <View style={styles.container}>
-                <Image source={{uri:movie.posters.thumbnail}}
-                       style={styles.thunbnail}
-                       />
-                <View style={styles.rightContainer}>
-                    <Text style={styles.title}>{movie.title}</Text>
-                    <Text style={styles.year}>{movie.year}</Text>
-                </View>
-            </View>
-        )
-    }
-
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        flexDirection:'row',
-        alignItems: 'center',
         backgroundColor: '#F5FCFF',
     },
-    thunbnail: {
-        width: 53,
-        height: 81,
+    welcome: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 10,
     },
-    rightContainer:{
-        flex: 1,
+    instructions: {
+        textAlign: 'center',
+        color: '#333333',
+        marginBottom: 5,
     },
-    title:{
-        fontSize:20,
-        marginBottom:8,
-        textAlign:'center',
-    },
-    year:{
-        textAlign:'center',
-    },
-    listView:{
-        paddingTop:20,
-        backgroundColor:'#F5FCFF'
-    }
 });
 
-AppRegistry.registerComponent('movielists', () => movielists);
+AppRegistry.registerComponent('homeList', () => homeList);

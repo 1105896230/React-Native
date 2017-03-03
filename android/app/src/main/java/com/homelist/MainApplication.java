@@ -1,4 +1,4 @@
-package com.movielists;
+package com.homelist;
 
 import android.app.Application;
 
