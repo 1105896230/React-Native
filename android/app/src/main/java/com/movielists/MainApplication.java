@@ -1,4 +1,4 @@
-package com.awesomeproject;
+package com.movielists;
 
 import android.app.Application;
 
