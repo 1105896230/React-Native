@@ -111,5 +111,39 @@ var styles = StyleSheet.create({
         backgroundColor:'#F5FCFF',
     },
 });
-AppRegistry.registerComponent("AwesomeProject", () => NetMovieList);
+
+class ImageDemo extends Component{
+    render(){
+        let pic={
+            uri:'http://p2.ifengimg.com/haina/2017_09/7c7aeba6cf16bad_w600_h337.jpg'
+        };
+        return(
+         <Image source={pic} style={{width :193,height:110}}/>
+      );
+    }
+}
+
+
+class Blink extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            showText:true,
+            text:'12212121'
+        }
+
+        //每1000毫秒对showText进行取反
+        setInterval(()=>{
+            this.setState({showText:!this.state.showText});
+        },1000)
+    }
+    render(){
+        let display=this.state.showText?'21212':'';
+        return(
+            <Text style={{backgroundColor:'red',width:300,height: 300}}>{display}</Text>
+        );
+    }
+}
+
+AppRegistry.registerComponent("AwesomeProject", () => Blink);
 
