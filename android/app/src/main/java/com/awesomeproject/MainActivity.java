@@ -1,7 +1,5 @@
 package com.awesomeproject;
 
-import android.util.Log;
-
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {
@@ -13,10 +11,5 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "AwesomeProject";
-    }
-
-    @Override
-    public void invokeDefaultOnBackPressed() {
-        super.invokeDefaultOnBackPressed();
     }
 }
