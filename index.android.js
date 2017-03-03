@@ -14,7 +14,11 @@ import {
     View,
     ListView,
     TextInput,
+    ScrollView,
+    Navigator
 }from 'react-native';
+// import MyScene from './MyScene';
+import MovieList from './movie';
 var MOCKED_MOVIES_DATA = [
     {title: '标题', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
 ];
@@ -151,7 +155,7 @@ class FixDimensionBasics extends Component {
     render() {
         return (
             <View>
-           <View style={{width:50,height:50,backgroundColor:'powderblue'}}/>
+                <View style={{width:50,height:50,backgroundColor:'powderblue'}}/>
                 <View style={{width:100,height:100,backgroundColor:'skyblue'}}/>
                 <View style={{width:150,height:150,backgroundColor:'steelblue'}}/>
             </View>
@@ -159,9 +163,9 @@ class FixDimensionBasics extends Component {
     }
 }
 
-class FlexDimensionBasic extends Component{
-    render(){
-        return(
+class FlexDimensionBasic extends Component {
+    render() {
+        return (
             <View style={{flex:1}}>
                 <View style={{flex:1,backgroundColor:'powderblue'}}/>
                 <View style={{flex:2,backgroundColor:'skyblue'}}/>
@@ -171,28 +175,28 @@ class FlexDimensionBasic extends Component{
     }
 }
 
-class FlexDirectionBasics extends Component{
-    render(){
-        return(
+class FlexDirectionBasics extends Component {
+    render() {
+        return (
             //flexDirction 水平布局
-          <View style={{flex:1,flexDirection:'row'}}>
-              <View style={{width:50,height:50,backgroundColor:'powderblue'}}/>
-              <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-              <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-          </View>
+            <View style={{flex:1,flexDirection:'row'}}>
+                <View style={{width:50,height:50,backgroundColor:'powderblue'}}/>
+                <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}}/>
+                <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}}/>
+            </View>
         );
     }
 }
 
-class JustifyContentBasics extends Component{
-    render(){
-        return(
-                //justifyContent 和layout-grativy有点类似
-          <View style={{ flex:1,flexDirection:'column',justifyContent:'center',}}>
-              <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-              <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-              <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-          </View>
+class JustifyContentBasics extends Component {
+    render() {
+        return (
+            //justifyContent 和layout-grativy有点类似
+            <View style={{ flex:1,flexDirection:'column',justifyContent:'center',}}>
+                <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}}/>
+                <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}}/>
+                <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}}/>
+            </View>
         );
     }
 }
@@ -210,31 +214,132 @@ class AlignItemsBasics extends Component {
         //决定次轴的分布，如果主轴是数值，这个就是水平
         alignItems: 'flex-end',
       }}>
-                <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-                <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-                <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+                <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}}/>
+                <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}}/>
+                <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}}/>
             </View>
         );
     }
-};
+}
+;
 
-class PizzaTranslator extends Component{
-    constructor(props){
+class PizzaTranslator extends Component {
+    constructor(props) {
         super(props);
-        this.state={text:''}
+        this.state = {text: ''}
     }
-    render(){
-        return(
-          <View style={{padding:10}}>
-          <TextInput style={{height:40}}
-                     placeholder="Type here to translate!"
-                     onChangeText={(text)=>this.setState({text})}/>
-              <Text style={{padding:10,fontSize:42}}>
-                  {this.state.text.split(' ').map((word)=>word&&'@').join(' ')}
-            </Text>
-          </View>
+
+    render() {
+        return (
+            <View style={{padding:10}}>
+                <TextInput style={{height:40}}
+                           placeholder="Type here to translate!"
+                           onChangeText={(text)=>this.setState({text})}/>
+                <Text style={{padding:10,fontSize:42}}>
+                    {this.state.text.split(' ').map((word) => word && '@').join(' ')}
+                </Text>
+            </View>
         );
     }
 }
-AppRegistry.registerComponent("AwesomeProject", () => PizzaTranslator);
+
+class IScrolledDownLoad extends Component {
+    render() {
+        return (
+            <ScrollView>
+                <Text style={{fontSize:96}}>scroll me plz</Text>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+                <Image source={require('./img/qd_logo@2x.png')}/>
+            </ScrollView>
+        );
+    }
+}
+class ListViewBasics extends Component {
+    constructor(props) {
+        super(props);
+        const ds = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1 !== r2
+        })
+        this.state = {
+            dataSource: ds.cloneWithRows([
+                'John', 'Joel', 'James', 'Jimmy', 'Jackson', 'Jillian', 'Julie', 'Devin'
+            ])
+        };
+    }
+
+    render() {
+        return (
+            <View style={{flex:1,paddingTop:2}}>
+                <ListView dataSource={this.state.dataSource}
+                          renderRow={(rowData)=><Text>{rowData}</Text>}/>
+            </View>
+        );
+    }
+}
+
+//return 可以导出其他Component
+class YoDawgApp extends Component {
+    render() {
+        return (
+            <MyScene/>
+        );
+    }
+}
+
+class NavitApp extends Component {
+    render() {
+        return (
+            <Navigator
+                initialRoute={{title:'My Initial Scene',index:0}}
+                renderScene={(route,navigator)=>
+                  <MyScene
+                   title={route.title}
+                   onForward={
+                       ()=>{
+                           const nextIndex=route.index+1;
+                           navigator.push({
+                               title:'Scene '+nextIndex,
+                               index:nextIndex,
+                           });
+                       }}
+                       onBack={()=>{
+                           if(route.index>0){
+                               navigator.pop();
+                           }
+                       }}
+                  />
+                }
+            />
+        )
+    }
+}
+
+class MovieDemo extends Component{
+    render(){
+        return (
+            <MovieList/>
+        );
+    }
+}
+
+AppRegistry.registerComponent("AwesomeProject", () => MovieDemo);
 
