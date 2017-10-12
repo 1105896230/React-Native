@@ -1,0 +1,29 @@
+{
+	"name": "dogVideo",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node node_modules/react-native/local-cli/cli.js start",
+		"test": "jest"
+	},
+	"dependencies": {
+		"lodash": "^4.17.4",
+		"mock.js": "^0.2.0",
+		"mockjs": "^1.0.1-beta3",
+		"query-string": "^5.0.0",
+		"react": "16.0.0-beta.5",
+		"react-native": "0.49.3",
+		"react-native-material-bottom-navigation": "^0.5.2",
+		"react-native-tab-navigator": "^0.3.4",
+		"react-native-vector-icons": "^4.4.2"
+	},
+	"devDependencies": {
+		"babel-jest": "21.2.0",
+		"babel-preset-react-native": "4.0.0",
+		"jest": "21.2.1",
+		"react-test-renderer": "16.0.0-beta.5"
+	},
+	"jest": {
+		"preset": "react-native"
+	}
+}
