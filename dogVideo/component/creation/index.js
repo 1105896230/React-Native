@@ -8,17 +8,23 @@ import {
   ListView,
   TouchableHighlight,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import request from '../common/netUtils'
 import config from '../common/config'
 
-var {height, width} = Dimensions.get('window');
+var cacheResults = {
+  items: [],
+  total: 0,
+}
+var { height, width } = Dimensions.get('window');
 export default class Creation extends Component {
   constructor(props) {
     super(props);
     var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
     this.state = {
       dataSource: ds.cloneWithRows([]),
+      isRefresh: false
     };
   }
   render() {
@@ -30,16 +36,77 @@ export default class Creation extends Component {
         <ListView
           dataSource={this.state.dataSource}
           enableEmptySections={true}
+          onEndReached={this.loadMore()}
+          renderFooter={() => this.renderFooter()}
+          showsVerticalScrollIndicator={false}
           renderRow={(rowData, sectionID, rowID, highlightRow) => this.renderRow(rowData, sectionID, rowID, highlightRow)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefresh}
+              onRefresh={this.onRefresh.bind(this)}
+              onEndReachedThreshold ={20}
+              tintColor="#ff0000"
+              title="Loading..."
+              titleColor="#00ff00"
+              colors={['#ff0000', '#00ff00', '#0000ff']}
+              progressBackgroundColor="#ffff00"
+            />
+          }
         />
       </View>
     )
   }
+  onRefresh() {
+    console.log('onRefresh')
+    this.setState({
+      isRefresh:true,
+    })
+    request.get((config.api.base + config.api.createions), {
+      accessToken: '22'
+    })
+      .then(data => {
+        cacheResults.total = data.total
+        cacheResults.items = data.data;
+        if (data.success) {
+          this.setState({
+            isRefresh:false,
+            dataSource: this.state.dataSource.cloneWithRows(cacheResults.items)
+          })
+        }
+      }).catch((error) => {
+        this.setState({
+          isRefresh:false,
+        })
+        console.warn(error)
+      })
+  }
+  renderFooter() {
+    if (!this.hasMore() && cacheResults.total !== 0) {
+      return (
+        <View style={styles.loadingMore}>
+          <Text style={styles.loadingText}>没有更多了</Text>
+        </View>
+      )
+    }
+    return (
+      <View style={styles.loadingMore}>
+      </View>
+    )
+  }
+  loadMore() {
+    if (!this.hasMore()) {
+      return
+    }
+    this._fetchData()
+  }
+  hasMore() {
+    return !cacheResults.items.length === cacheResults.total
+  }
   renderRow(rowData, sectionID, rowID, highlightRow) {
-    return ( 
+    return (
       <TouchableHighlight>
         <View style={styles.item}>
-          <Text  style={styles.title}>{rowData.title}</Text>
+          <Text style={styles.title}>{rowData.title}</Text>
           <Image source={{ uri: rowData.thumb }}
             style={styles.thumb} />
           <Image
@@ -48,16 +115,16 @@ export default class Creation extends Component {
           />
           <View style={styles.itemFooter}>
             <View style={styles.handlerBox}>
-             <Image
+              <Image
                 source={require("../source/ic_launcher.png")}
-                style={[styles.play,styles.up]}
+                style={[styles.play, styles.up]}
               />
               <Text style={styles.handleText}>喜欢</Text>
             </View>
             <View style={styles.handlerBox}>
-            <Image
-            source={require("../source/ic_launcher.png")}
-                style={[styles.play,styles.commentIcon]}
+              <Image
+                source={require("../source/ic_launcher.png")}
+                style={[styles.play, styles.commentIcon]}
               />
               <Text style={styles.handleText}>评论</Text>
             </View>
@@ -68,19 +135,27 @@ export default class Creation extends Component {
       </TouchableHighlight>
     )
   }
-  componentDidMount(){
-    request.get((config.api.base+config.api.createions),{
-      accessToken:'22'
+  componentDidMount() {
+    this._fetchData()
+  }
+  _fetchData() {
+
+    request.get((config.api.base + config.api.createions), {
+      accessToken: '22'
     })
-    .then(data=>{
-      if(data.success){
-        this.setState({
-          dataSource:this.state.dataSource.cloneWithRows(data.data)
-        })
-      }
-    }).catch((error)=>{
-      console.warn(error)
-    })
+      .then(data => {
+        cacheResults.total = data.total
+        var items = cacheResults.items.slice();
+        items = items.concat(data.data)
+        cacheResults.items = items;
+        if (data.success) {
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(cacheResults.items)
+          })
+        }
+      }).catch((error) => {
+        console.warn(error)
+      })
   }
 }
 
@@ -96,63 +171,70 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff804a'
   },
   headerTitle: {
-    color: '#fff', 
+    color: '#fff',
     fontSize: 16,
     textAlign: 'center',
     fontWeight: '600'
   },
   item: {
-      width:width,
-      marginBottom:10,
-      backgroundColor:'#fff'
-    
+    width: width,
+    marginBottom: 10,
+    backgroundColor: '#fff'
+
   },
-  thumb:{
-    width:width,
-    height:width*0.5,
-    resizeMode:'cover'
+  thumb: {
+    width: width,
+    height: width * 0.5,
+    resizeMode: 'cover'
   },
-  title:{
-    padding:10,
-    fontSize:18,
-    color:'#333'
+  title: {
+    padding: 10,
+    fontSize: 18,
+    color: '#333'
   },
-  itemFooter:{
-    flexDirection:'row',
-    justifyContent:'space-between',
-    backgroundColor:'#eee'
+  itemFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#eee'
   },
-  handlerBox:{
-    padding:10,
-    flexDirection:'row',
-    width:width/2-0.5,
-    justifyContent:'center',
-    backgroundColor:'#fff'
+  handlerBox: {
+    padding: 10,
+    flexDirection: 'row',
+    width: width / 2 - 0.5,
+    justifyContent: 'center',
+    backgroundColor: '#fff'
   },
   play: {
-    position:'absolute',
-    bottom:60,
-    right:14,
-    width:46,
-    height:46,
-    paddingTop:9,
-    paddingLeft:18,
-    backgroundColor:'transparent',
-    borderColor:'#fff',
-    borderWidth:1,
-    borderRadius:23,
+    position: 'absolute',
+    bottom: 60,
+    right: 14,
+    width: 46,
+    height: 46,
+    paddingTop: 9,
+    paddingLeft: 18,
+    backgroundColor: 'transparent',
+    borderColor: '#fff',
+    borderWidth: 1,
+    borderRadius: 23,
   },
-  handleText:{
-    paddingLeft:12,
-    fontSize:18,
-    color:'#333'
+  handleText: {
+    paddingLeft: 12,
+    fontSize: 18,
+    color: '#333'
   },
-  up:{
-    fontSize:22,
-    color:'#333'
+  up: {
+    fontSize: 22,
+    color: '#333'
   },
-  commentIcon:{
- fontSize:22,
-    color:'#333'
+  commentIcon: {
+    fontSize: 22,
+    color: '#333'
+  },
+  loadingMore: {
+    marginVertical: 20
+  },
+  loadingText: {
+    color: '#777',
+    textAlign: 'center'
   }
 })
