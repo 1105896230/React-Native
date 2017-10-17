@@ -231,12 +231,8 @@ const styles = StyleSheet.create({
     color: '#333'
   },
   up: {
-    fontSize: 22,
-    color: '#333'
   },
   commentIcon: {
-    fontSize: 22,
-    color: '#333'
   },
   loadingMore: {
     marginVertical: 20

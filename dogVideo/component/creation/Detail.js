@@ -5,6 +5,7 @@ import {
   View,
   Image,
   Dimensions,
+  ActivityIndicator
 } from 'react-native';
 var Video = require('react-native-video').default;
 import request from '../common/netUtils'
@@ -21,13 +22,17 @@ export default class Detail extends Component {
     },
     title: '详情'
   });
-  constructor(props){
+  constructor(props) {
     super(props)
-    this.state=({
+    this.state = ({
       rate: 1,
       muted: false,
       resizeMode: 'cover',
-      repeat: false
+      repeat: false,
+      videoReady: false,
+      videoProgress: 0.01,
+      videoTotal: 0,
+      videoCurrent: 0
     })
   }
   render() {
@@ -49,10 +54,14 @@ export default class Detail extends Component {
             repeat={this.state.repeat}//
             onLoadStart={this._onLoadStart} //视频开始加载回调
             onLoad={this._onLoad}           //视频加载完毕回调
-            onProgress={this._onProgress}   //每隔250ms调用一次
+            onProgress={this._onProgress.bind(this)}   //每隔250ms调用一次
             onEnd={this._onEnd}             //视频加载结束回调
             onError={this._onError}         //视频加载错误回调
           />
+          {!this.state.videoReady && <ActivityIndicator color='#ee735c' style={styles.loading} />}
+          <View style={styles.progressBox}>
+              <View style={[styles.progressBar]} />
+            </View>
         </View>
       </View>
     )
@@ -65,7 +74,24 @@ export default class Detail extends Component {
 
   }
   _onProgress(data) {
-    console.log('onProgress:' + data)
+    console.log(this.state)
+    if (!this.state.videoReady) {
+      this.setState({
+        videoReady: true
+      })
+    }
+    var total = data.playableDuration;
+    var current = data.currentTime;
+    var percent = 1;
+    console.log(total)
+    console.log( Number(current.toFixed(2)))
+    console.log(percent)
+    this.setState({
+      videoTotal: total,
+      currentTime: Number(current.toFixed(2)),
+      videoProgress: percent
+    })
+
   }
   _onEnd() {
     console.log('onEnd')
@@ -80,18 +106,39 @@ export default class Detail extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#F5FCFF'
   },
   videoBox: {
     width: width,
-    height: 360,
+    height: 250,
     backgroundColor: '#000'
   },
   video: {
     width: width,
     height: 360,
     backgroundColor: '#000'
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    top: 360,
+    width: width,
+    alignSelf: 'center',
+    backgroundColor: 'transparent'
+  },
+  progressBox:{
+    position: 'absolute',
+    left: 0,
+    width: width,
+    height:200,
+    backgroundColor: '#ccc'
+  },
+  progressBar:{
+    position: 'absolute',
+    left: 0,
+    top: 150,
+    width: width,
+    height:200,
+    backgroundColor: '#ff6600'
   }
 })
