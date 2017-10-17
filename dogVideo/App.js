@@ -10,18 +10,29 @@ import {
   StyleSheet,
   Text,
   View,
-  Image
+  Image,
 } from 'react-native';
+import {
+  StackNavigator,
+} from 'react-navigation';
 import TabNavigator from 'react-native-tab-navigator';
 import Account from './component/account/index'
 import Edit from './component/edit/index'
 import Creation from './component/creation/index'
-
+import Detail from './component/creation/Detail'
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
   'Cmd+D or shake for dev menu',
   android: 'Double tap R on your keyboard to reload,\n' +
   'Shake or press menu button for dev menu',
+});
+const Navigator = StackNavigator({
+  Creation: { screen: Creation },
+  Detail: { screen: Detail },
+},{
+	initialRouteName: 'Creation', // 默认显示界面
+    onTransitionStart: ()=>{ console.log('导航栏切换开始'); },  // 回调
+    onTransitionEnd: ()=>{ console.log('导航栏切换结束'); },  // 回调
 });
 
 export default class App extends Component {
@@ -31,6 +42,8 @@ export default class App extends Component {
       selectedTab: 'home'
     }
   }
+
+
   render() {
     return (
       <TabNavigator
@@ -41,7 +54,9 @@ export default class App extends Component {
           renderIcon={() => <Image style={styles.Image} source={require('./component/source/ic_launcher.png')} />}
           renderSelectedIcon={() => <Image  style={styles.Image} source={require('./component/source/ic_launcher_round.png')} />}
           onPress={() => this.setState({ selectedTab: 'home' })}>
-          {<Creation/>}
+          { 
+              <Navigator/>
+          }
         </TabNavigator.Item>
         <TabNavigator.Item
           selected={this.state.selectedTab === 'video'}

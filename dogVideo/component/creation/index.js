@@ -12,13 +12,20 @@ import {
 } from 'react-native';
 import request from '../common/netUtils'
 import config from '../common/config'
-
 var cacheResults = {
   items: [],
   total: 0,
 }
 var { height, width } = Dimensions.get('window');
 export default class Creation extends Component {
+    static navigationOptions = {
+  	//标题
+    header: false,
+     //是否允许右滑返回，在iOS上默认为true，在Android上默认为false
+    cardStack: {
+            gesturesEnabled: true,
+    },
+  };
   constructor(props) {
     super(props);
     var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
@@ -28,6 +35,7 @@ export default class Creation extends Component {
     };
   }
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -39,7 +47,7 @@ export default class Creation extends Component {
           onEndReached={this.loadMore()}
           renderFooter={() => this.renderFooter()}
           showsVerticalScrollIndicator={false}
-          renderRow={(rowData, sectionID, rowID, highlightRow) => this.renderRow(rowData, sectionID, rowID, highlightRow)}
+          renderRow={(rowData, sectionID, rowID, highlightRow) => this.renderRow(rowData, sectionID, rowID, highlightRow,navigate)}
           refreshControl={
             <RefreshControl
               refreshing={this.state.isRefresh}
@@ -102,9 +110,9 @@ export default class Creation extends Component {
   hasMore() {
     return !cacheResults.items.length === cacheResults.total
   }
-  renderRow(rowData, sectionID, rowID, highlightRow) {
+  renderRow(rowData, sectionID, rowID, highlightRow,navigate) {
     return (
-      <TouchableHighlight>
+      <TouchableHighlight onPress={()=>navigate('Detail', { data: rowData })}>
         <View style={styles.item}>
           <Text style={styles.title}>{rowData.title}</Text>
           <Image source={{ uri: rowData.thumb }}
