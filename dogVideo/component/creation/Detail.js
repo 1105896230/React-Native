@@ -6,7 +6,9 @@ import {
   Image,
   Dimensions,
   ActivityIndicator,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView,
+  ListView
 } from 'react-native';
 var Video = require('react-native-video').default;
 import request from '../common/netUtils'
@@ -25,6 +27,7 @@ export default class Detail extends Component {
   });
   constructor(props) {
     super(props)
+    var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
     this.state = ({
       rate: 1,
       muted: false,
@@ -36,9 +39,35 @@ export default class Detail extends Component {
       videoCurrent: 0,
       playing: false,
       paused: false,
-      videoOk:true,
+      videoOk: true,
+      coment: '',
+      dataSource: ds.cloneWithRows([])
     })
   }
+  componentDidMount() {
+    this._fetchdata()
+  }
+  _fetchdata() {
+    var that = this
+    var url = config.api.base + config.api.comment
+    request.get(url, {
+      id: 124,
+      accesToken: '123a'
+    }).then(function (data) {
+      if (data && data.success) {
+        var comment = data.data
+        if (comment && comment.length > 0) {
+          that.setState({
+            coment: comment,
+            dataSource: that.state.dataSource.cloneWithRows(comment)
+          })
+        }
+      }
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
   render() {
     var data = this.props.navigation.state.params.data;
     console.log(data.video)
@@ -48,7 +77,7 @@ export default class Detail extends Component {
         <View style={styles.videoBox}>
           <Video
             ref="videoPlayer"
-            source={{ uri: "xx" }} //视频播放地址
+            source={{ uri: data.video }} //视频播放地址
             style={styles.video}      //样式
             volum={4}                 //声音放大倍数
             paused={this.state.paused}            //true暂停 false开始
@@ -63,7 +92,7 @@ export default class Detail extends Component {
             onError={this._onError}         //视频加载错误回调
           />
           {
-            !this.state.videoOk&&<Text style={styles.failText}>视频出错了!很抱歉</Text>
+            !this.state.videoOk && <Text style={styles.failText}>视频出错了!很抱歉</Text>
 
           }
 
@@ -72,20 +101,50 @@ export default class Detail extends Component {
             this.state.videoReady && this.state.playing
               ? <TouchableOpacity style={styles.pauseBtn} onPress={() => this._onPause()}>
                 {
-                  this.state.paused ? 
-                  <Image
-                  source={require("../source/ic_launcher.png")}
-                  style={styles.icon}
-                />
-                 : null
-              }
-              </TouchableOpacity> 
+                  this.state.paused ?
+                    <Image
+                      source={require("../source/ic_launcher.png")}
+                      style={styles.icon}
+                    />
+                    : null
+                }
+              </TouchableOpacity>
               : null
           }
           <View style={styles.progressBox}>
             <View style={[styles.progressBar, { width: width * this.state.videoProgress }]} />
           </View>
         </View>
+        <ScrollView
+          automaticallyAdjustContentInsets={false}
+          enableEmptySection={false}
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollview}>
+          <View style={styles.infoBox}>
+            <Image style={styles.avater} source={{ uri: data.author.avater }} />
+            <View style={styles.descBox}>
+              <Text style={styles.nickname}>{data.author.nick}</Text>
+              <Text style={styles.title}>{data.title}</Text>
+            </View>
+          </View>
+          <ListView
+            dataSource={this.state.dataSource}
+            enableEmptySections={true}
+            showsVerticalScrollIndicator={false}
+            renderRow={(rowData, sectionID, rowID) => this.renderRow(rowData, sectionID, rowID)}
+          />
+        </ScrollView>
+      </View>
+    )
+  }
+  renderRow(rowData) {
+    return (
+      <View key={rowData.id} style={styles.replayBox}>
+       <Image style={styles.replayAvater} source={{ uri: rowData.repalyBy.avater }} />
+            <View style={styles.replay}>
+              <Text style={styles.replaynNickname}>{rowData.repalyBy.nick}</Text>
+              <Text style={styles.replayTitle}>{rowData.content}</Text>
+            </View>
       </View>
     )
   }
@@ -125,10 +184,10 @@ export default class Detail extends Component {
     console.log('onEnd')
 
   }
-  _onError(e) {
-    console.log('onError：' + e)
+  _onError() {
+    console.log('onError：')
     this.setState({
-      videoOk:false
+      videoOk: false
     })
   }
 
@@ -157,14 +216,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'transparent'
   },
-  failText:{
+  scrollview: {
+
+  },
+  failText: {
     position: 'absolute',
     left: 0,
-    top: 360,
+    top: 180,
     width: width,
     alignSelf: 'center',
     backgroundColor: 'transparent',
-    color:'#fff'
+    color: '#fff'
   },
   progressBox: {
     position: 'absolute',
@@ -185,18 +247,65 @@ const styles = StyleSheet.create({
     width: width,
     height: 360,
     position: 'absolute',
-    top:0,
-    left:0
+    top: 0,
+    left: 0
   },
   icon: {
     position: 'absolute',
-    top:140,
-    left:width/2-23,
+    top: 140,
+    left: width / 2 - 23,
     width: 46,
     height: 46,
     backgroundColor: 'transparent',
     borderColor: '#fff',
     borderWidth: 1,
     borderRadius: 23,
+  },
+  infoBox: {
+    width: width,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  avater: {
+    width: 60,
+    height: 60,
+    marginRight: 10,
+    marginLeft: 10,
+    borderRadius: 30
+  },
+  descBox: {
+    flex: 1,
+  },
+  nickname: {
+    fontSize: 18
+  },
+  title: {
+    marginTop: 8,
+    fontSize: 16,
+    color: '#666'
+  },
+  replayBox:{
+    flexDirection:'row',
+    justifyContent:'flex-start',
+    marginTop:10
+  },
+  replayAvater:{
+    width:40,
+    height:40,
+    marginRight:10,
+    marginLeft:10,
+    borderRadius:20
+  },
+  replaynNickname:{
+    color:'#666'
+  },
+  replayTitle:{
+    color:'#666',
+    marginTop:4
+  },
+  replay:{
+    flex:1
   }
 })
