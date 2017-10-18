@@ -36,6 +36,7 @@ export default class Detail extends Component {
       videoCurrent: 0,
       playing: false,
       paused: false,
+      videoOk:true,
     })
   }
   render() {
@@ -47,7 +48,7 @@ export default class Detail extends Component {
         <View style={styles.videoBox}>
           <Video
             ref="videoPlayer"
-            source={{ uri: data.video }} //视频播放地址
+            source={{ uri: "xx" }} //视频播放地址
             style={styles.video}      //样式
             volum={4}                 //声音放大倍数
             paused={this.state.paused}            //true暂停 false开始
@@ -61,6 +62,11 @@ export default class Detail extends Component {
             onEnd={this._onEnd}             //视频加载结束回调
             onError={this._onError}         //视频加载错误回调
           />
+          {
+            !this.state.videoOk&&<Text style={styles.failText}>视频出错了!很抱歉</Text>
+
+          }
+
           {!this.state.videoReady && <ActivityIndicator color='#ee735c' style={styles.loading} />}
           {
             this.state.videoReady && this.state.playing
@@ -93,7 +99,6 @@ export default class Detail extends Component {
   }
   _onLoad() {
     console.log('onLoad')
-
   }
   _onProgress(data) {
     console.log(this.state)
@@ -122,6 +127,9 @@ export default class Detail extends Component {
   }
   _onError(e) {
     console.log('onError：' + e)
+    this.setState({
+      videoOk:false
+    })
   }
 
 }
@@ -148,6 +156,15 @@ const styles = StyleSheet.create({
     width: width,
     alignSelf: 'center',
     backgroundColor: 'transparent'
+  },
+  failText:{
+    position: 'absolute',
+    left: 0,
+    top: 360,
+    width: width,
+    alignSelf: 'center',
+    backgroundColor: 'transparent',
+    color:'#fff'
   },
   progressBox: {
     position: 'absolute',
