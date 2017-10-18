@@ -5,7 +5,8 @@ import {
   View,
   Image,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
 } from 'react-native';
 var Video = require('react-native-video').default;
 import request from '../common/netUtils'
@@ -32,7 +33,9 @@ export default class Detail extends Component {
       videoReady: false,
       videoProgress: 0.01,
       videoTotal: 0,
-      videoCurrent: 0
+      videoCurrent: 0,
+      playing: false,
+      paused: false,
     })
   }
   render() {
@@ -47,7 +50,7 @@ export default class Detail extends Component {
             source={{ uri: data.video }} //视频播放地址
             style={styles.video}      //样式
             volum={4}                 //声音放大倍数
-            paused={false}            //true暂停 false开始
+            paused={this.state.paused}            //true暂停 false开始
             rate={this.state.rate}    // 0 暂停 1正常
             muted={this.state.muted}  //true静音 false 正常
             resizeMode={this.state.resizeMode}//
@@ -59,12 +62,31 @@ export default class Detail extends Component {
             onError={this._onError}         //视频加载错误回调
           />
           {!this.state.videoReady && <ActivityIndicator color='#ee735c' style={styles.loading} />}
+          {
+            this.state.videoReady && this.state.playing
+              ? <TouchableOpacity style={styles.pauseBtn} onPress={() => this._onPause()}>
+                {
+                  this.state.paused ? 
+                  <Image
+                  source={require("../source/ic_launcher.png")}
+                  style={styles.icon}
+                />
+                 : null
+              }
+              </TouchableOpacity> 
+              : null
+          }
           <View style={styles.progressBox}>
-              <View style={[styles.progressBar]} />
-            </View>
+            <View style={[styles.progressBar, { width: width * this.state.videoProgress }]} />
+          </View>
         </View>
       </View>
     )
+  }
+  _onPause() {
+    this.setState({
+      paused: !this.state.paused
+    })
   }
   _onLoadStart() {
     console.log('onLoadStart')
@@ -82,14 +104,15 @@ export default class Detail extends Component {
     }
     var total = data.playableDuration;
     var current = data.currentTime;
-    var percent = 1;
+    var percent = Number((current / total).toFixed(2));
     console.log(total)
-    console.log( Number(current.toFixed(2)))
+    console.log(Number(current.toFixed(2)))
     console.log(percent)
     this.setState({
       videoTotal: total,
       currentTime: Number(current.toFixed(2)),
-      videoProgress: percent
+      videoProgress: percent,
+      playing: true
     })
 
   }
@@ -126,19 +149,37 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'transparent'
   },
-  progressBox:{
+  progressBox: {
     position: 'absolute',
     left: 0,
+    bottom: 0,
     width: width,
-    height:200,
+    height: 2,
     backgroundColor: '#ccc'
   },
-  progressBar:{
+  progressBar: {
     position: 'absolute',
     left: 0,
-    top: 150,
-    width: width,
-    height:200,
+    bottom: 0,
+    height: 2,
     backgroundColor: '#ff6600'
+  },
+  pauseBtn: {
+    width: width,
+    height: 360,
+    position: 'absolute',
+    top:0,
+    left:0
+  },
+  icon: {
+    position: 'absolute',
+    top:140,
+    left:width/2-23,
+    width: 46,
+    height: 46,
+    backgroundColor: 'transparent',
+    borderColor: '#fff',
+    borderWidth: 1,
+    borderRadius: 23,
   }
 })
