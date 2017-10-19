@@ -10,6 +10,9 @@ module.exports={
     api:{
         base:'http://rapapi.org/mockjs/27110/api/',
         createions:'creations',
-        comment:'comment'
+        comment:'comment',
+        content:'content',
+        sendCode:'u/signup',
+        login:'u/login'
     }
 }
