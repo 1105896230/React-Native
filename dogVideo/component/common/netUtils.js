@@ -2,6 +2,7 @@ import queryString from 'query-string';
 import lodash from 'lodash'
 import config from './config'
 import Mock from 'mockjs'
+
 var request ={
 
 }
@@ -14,7 +15,7 @@ request.get=function(url,params){
     .then((response)=>Mock.mock(response))
 }
 request.post=function(url,body){
-    var options=lodash.extend(config.header,header,{
+    var options=lodash.extend(config.header,{
         body:JSON.stringify(body)
     })
     return fetch(url)

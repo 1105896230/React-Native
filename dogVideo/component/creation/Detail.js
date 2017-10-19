@@ -8,9 +8,13 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   ScrollView,
-  ListView
+  ListView,
+  TextInput,
+  Modal,
+  Alert
 } from 'react-native';
 var Video = require('react-native-video').default;
+import Button from 'react-native-button'
 import request from '../common/netUtils'
 import config from '../common/config'
 var { height, width } = Dimensions.get('window');
@@ -41,7 +45,12 @@ export default class Detail extends Component {
       paused: false,
       videoOk: true,
       coment: '',
-      dataSource: ds.cloneWithRows([])
+      dataSource: ds.cloneWithRows([]),
+      animationType: 'none',
+      modalVisable: false,
+      content:'',
+      isSendIng:false
+
     })
   }
   componentDidMount() {
@@ -70,8 +79,7 @@ export default class Detail extends Component {
 
   render() {
     var data = this.props.navigation.state.params.data;
-    console.log(data.video)
-    console.log(this.state)
+    var that = this;
     return (
       <View style={styles.container}>
         <View style={styles.videoBox}>
@@ -120,31 +128,128 @@ export default class Detail extends Component {
           enableEmptySection={false}
           showsVerticalScrollIndicator={false}
           style={styles.scrollview}>
-          <View style={styles.infoBox}>
-            <Image style={styles.avater} source={{ uri: data.author.avater }} />
-            <View style={styles.descBox}>
-              <Text style={styles.nickname}>{data.author.nick}</Text>
-              <Text style={styles.title}>{data.title}</Text>
-            </View>
-          </View>
           <ListView
             dataSource={this.state.dataSource}
             enableEmptySections={true}
+            renderHeader={() => this._renderHeader()}
             showsVerticalScrollIndicator={false}
             renderRow={(rowData, sectionID, rowID) => this.renderRow(rowData, sectionID, rowID)}
           />
+          <Modal
+            animationType={'fade'}
+            visible={this.state.modalVisable}
+            onRequestClose={() => { this._setModalVisable(false) }}>
+            <View style={styles.modalContainer}>
+              <View style={styles.commentBox}>
+                <View style={styles.comment}>
+                  <Text>输入评论</Text>
+                  <TextInput
+                    placeholder='好喜欢。。'
+                    style={styles.content}
+                    multiline={true}
+                    onFocus={() => that._onFocus()}
+                    onBlur={this._onBlur}
+                    defaultValue={this.state.content}
+                    onChangeText={(text) => {
+                      that.setState({
+                        content: text
+                      })
+                    }}
+                  />
+                </View>
+              </View>
+              <Button style={styles.submitbtn} onPress={()=>that._submit()}>评论</Button>
+            </View>
+
+          </Modal>
         </ScrollView>
       </View>
     )
   }
+  _submit() {
+    if (!this.state.content) {
+      return Alert.alert('留言不能为空')
+    }
+    if (this.state.isSendIng) {
+      return Alert.alert('正在评论中')
+    }
+    this.setState({
+       isSendIng:true
+    },function(){
+      var body={
+        accessToken:'abc',
+        content:this.state.content,
+        creation:'123'
+      }
+      var url=config.api.base+config.api.content;
+      request.post(url,body)
+      .then(function(data){
+        console.log(data)
+        Alert.alert('评论成功')
+        this.setState({
+          isSendIng:false,
+        })
+      }).catch((error)=>{
+        this.setState({
+          isSendIng:false
+        })
+      })
+    })
+
+  }
+  _renderHeader() {
+    var data = this.props.navigation.state.params.data;
+    var that = this
+    return (
+      <View style={styles.listHeader}>
+        <View style={styles.infoBox}>
+          <Image style={styles.avater} source={{ uri: data.author.avater }} />
+          <View style={styles.descBox}>
+            <Text style={styles.nickname}>{data.author.nick}</Text>
+            <Text style={styles.title}>{data.title}</Text>
+          </View>
+        </View>
+
+        <View style={styles.commentBox}>
+          <View style={styles.comment}>
+            <Text>输入评论</Text>
+            <TextInput
+              placeholder='好喜欢。。'
+              style={styles.content}
+              multiline={true}
+              onFocus={() => that._onFocus()}
+            />
+          </View>
+        </View>
+        <View style={styles.commentArea}>
+          <Text style={styles.commentAreaText}>精彩评论</Text>
+        </View>
+      </View>
+    )
+  }
+  _onBlur() {
+
+  }
+  _closeMoal() {
+    this._setModalVisable(false)
+  }
+  _onFocus() {
+    console.log(this)
+    this._setModalVisable(true)
+  }
+  _setModalVisable(isVisable) {
+    this.setState({
+      modalVisable: isVisable
+    })
+  }
   renderRow(rowData) {
     return (
       <View key={rowData.id} style={styles.replayBox}>
-       <Image style={styles.replayAvater} source={{ uri: rowData.repalyBy.avater }} />
-            <View style={styles.replay}>
-              <Text style={styles.replaynNickname}>{rowData.repalyBy.nick}</Text>
-              <Text style={styles.replayTitle}>{rowData.content}</Text>
-            </View>
+        <Image style={styles.replayAvater} source={{ uri: rowData.repalyBy.avater }} />
+        <View style={styles.replay}>
+          <Text style={styles.replaynNickname}>{rowData.repalyBy.nick}</Text>
+          <Text style={styles.replayTitle}>{rowData.content}</Text>
+        </View>
       </View>
     )
   }
@@ -160,7 +265,6 @@ export default class Detail extends Component {
     console.log('onLoad')
   }
   _onProgress(data) {
-    console.log(this.state)
     if (!this.state.videoReady) {
       this.setState({
         videoReady: true
@@ -169,9 +273,6 @@ export default class Detail extends Component {
     var total = data.playableDuration;
     var current = data.currentTime;
     var percent = Number((current / total).toFixed(2));
-    console.log(total)
-    console.log(Number(current.toFixed(2)))
-    console.log(percent)
     this.setState({
       videoTotal: total,
       currentTime: Number(current.toFixed(2)),
@@ -263,7 +364,6 @@ const styles = StyleSheet.create({
   },
   infoBox: {
     width: width,
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 10,
@@ -286,26 +386,63 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666'
   },
-  replayBox:{
-    flexDirection:'row',
-    justifyContent:'flex-start',
-    marginTop:10
+  replayBox: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginTop: 10
   },
-  replayAvater:{
-    width:40,
-    height:40,
-    marginRight:10,
-    marginLeft:10,
-    borderRadius:20
+  replayAvater: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+    marginLeft: 10,
+    borderRadius: 20
   },
-  replaynNickname:{
-    color:'#666'
+  replaynNickname: {
+    color: '#666'
   },
-  replayTitle:{
-    color:'#666',
-    marginTop:4
+  replayTitle: {
+    color: '#666',
+    marginTop: 4
   },
-  replay:{
-    flex:1
+  replay: {
+    flex: 1
+  },
+  listHeader: {
+    width: width,
+    marginTop: 10
+  },
+  commentBox: {
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 8,
+    width: width,
+  },
+  content: {
+    paddingLeft: 2,
+    color: '#333',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    fontSize: 14,
+    height: 80
+  },
+  commentArea: {
+    width: width,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee'
+  },
+  submitbtn: {
+    width: width - 20,
+    padding: 16,
+    marginTop: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ee735c',
+    borderRadius: 4,
+    color: '#ee735c',
+    fontSize: 18
   }
 })
