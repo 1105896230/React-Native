@@ -114,7 +114,7 @@ export default class App extends Component {
           renderIcon={() => <Image style={styles.Image} source={require('./component/source/ic_launcher.png')} />}
           renderSelectedIcon={() => <Image style={styles.Image} source={require('./component/source/ic_launcher_round.png')} />}
           onPress={() => this.setState({ selectedTab: 'profile' })}>
-          {<Account />}
+          {<Account user={this.state.user}/>}
         </TabNavigator.Item>
       </TabNavigator>
     );
