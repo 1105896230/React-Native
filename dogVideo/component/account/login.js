@@ -14,7 +14,7 @@ import request from '../common/netUtils'
 import config from '../common/config'
 import Button from 'react-native-button'
 
-export default class Account extends Component {
+export default class Login extends Component {
 
   constructor(props) {
     super(props)
@@ -22,7 +22,7 @@ export default class Account extends Component {
       phoneNumber: '',
       codeSend: false,
       verifyCode: '',
-      countingDone:false
+      countingDone: false
     })
   }
 
@@ -62,7 +62,7 @@ export default class Account extends Component {
           }
 
           {
-            this.state.codeSend ? <Button style={styles.btn} onPress={()=>this._submit()}>登录</Button>
+            this.state.codeSend ? <Button style={styles.btn} onPress={() => this._submit()}>登录</Button>
               : <Button style={styles.btn} onPress={() => this.sendVerifyCode()}>获取验证码</Button>
           }
         </View>
@@ -70,25 +70,31 @@ export default class Account extends Component {
     )
   }
   _submit() {
-    console.log(_submit)
-    request.get((config.api.base + config.api.login), {
-      phoneNumber:this.state.phoneNumber,
-      verifyCode:this.state.verifyCode
-    })
-      .then(data => {
-        console.log(data)
+    var phoneNumber = this.state.phoneNumber
+    var that=this
+    if (!phoneNumber) {
+      Alert.alert('手机号不能为空')
+      return
+    }
+    var body = {
+      phoneNumber: phoneNumber,
+      verifyCode: this.state.verifyCode
+    }
+    var url = config.api.base + config.api.login
+    request.get(url, body)
+      .then((data) => {
+        console.log(that)
+        that.props.afterLogin(data.data)
       }).catch((error) => {
-     
-        console.warn(error)
+        console.log(error)
       })
   }
-  down(){
+  down() {
     this.setState({
       countingDone: true,
     })
   }
   sendVerifyCode() {
-    console.log(sendVerifyCode)
     var phoneNumber = this.state.phoneNumber
     if (!phoneNumber) {
       Alert.alert('手机号不能为空')
@@ -100,7 +106,6 @@ export default class Account extends Component {
     var url = config.api.base + config.api.sendCode
     request.post(url, body)
       .then((data) => {
-        console.log(data)
         this.showVeriyCode();
       }).catch((error) => {
         Alert.alert('检查网络')
@@ -144,18 +149,18 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     color: '#ee735c'
   },
-  verifyCodeBox:{
-    marginTop:10,
+  verifyCodeBox: {
+    marginTop: 10,
   },
-  countBtn:{
-    width:110,
-    height:40,
-    padding:10,
-    marginLeft:8,
-    backgroundColor:'transparent',
-    borderColor:'#ee735c',
-    textAlign:'left',
-    fontSize:15,
-    borderRadius:2
+  countBtn: {
+    width: 110,
+    height: 40,
+    padding: 10,
+    marginLeft: 8,
+    backgroundColor: 'transparent',
+    borderColor: '#ee735c',
+    textAlign: 'left',
+    fontSize: 15,
+    borderRadius: 2
   }
 })
