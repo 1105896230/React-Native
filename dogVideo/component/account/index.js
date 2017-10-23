@@ -16,15 +16,46 @@ import request from '../common/netUtils'
 import config from '../common/config'
 import Button from 'react-native-button'
 var { height, width } = Dimensions.get('window');
+var ImagePicker = require('react-native-image-picker');
 export default class Account extends Component {
 
   constructor(props) {
     super(props)
-    // this.state=({
-    //   user: this.props.user
-    // })
+    var u=this.props.user
+  
+    this.state = ({
+      user: u
+    })
   }
 
+  _pickPhoto() {
+    var that=this
+    var options = {
+      title: '选择头像',
+      cancelButtonTitle:'取消',
+      takePhotoButtonTitle:'拍照',
+      chooseFromLibraryButtonTitle:'选择相册',
+      quality:0.75,
+      allowsEditing:true,
+      noData:false,
+      storageOptions:{
+        skipBackup:true,
+        path:'images'
+      }
+    };
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        return
+      }
+      console.log(that)
+      var avaterData = 'data:image/jpeg;base64,' + response.data
+      var user = that.state.user
+      user.avater = avaterData;
+      that.setState({
+        user: user
+      })
+    });
+  }
 
   render() {
     var user = this.props.user
@@ -36,7 +67,7 @@ export default class Account extends Component {
 
         {
           user.avater ?
-            <TouchableOpacity style={styles.avaterContainer}>
+            <TouchableOpacity style={styles.avaterContainer} onPress={this._pickPhoto.bind(this)}>
               <Image style={styles.avaterContainer} source={{ uri: this.props.user.avater }}>
                 <View style={styles.avaterBox}>
                   <Image
@@ -53,7 +84,7 @@ export default class Account extends Component {
               <Text style={styles.avaterTip}>
                 添加头像
               </Text>
-              <TouchableOpacity style={styles.avaterBox}>
+              <TouchableOpacity style={styles.avaterBox}  onPress={this._pickPhoto.bind(this)}>
                 <Image
                   source={require("../source/ic_launcher.png")}
                   style={styles.icon}

@@ -72,6 +72,7 @@ export default class App extends Component {
 
 
   save(data){
+    console.log(data)
     user=JSON.stringify(data)
     AsyncStorage.setItem('user',user)
     .then(()=>{
